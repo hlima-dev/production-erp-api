@@ -28,7 +28,7 @@ public class WarehouseService {
         return warehouseRepository.findAll().stream().map(mapper::toResponse).toList();
     }
 
-    Warehouse getOrThrow(UUID id) {
+    public Warehouse getOrThrow(UUID id) {
         return warehouseRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Almoxarifado"));
     }

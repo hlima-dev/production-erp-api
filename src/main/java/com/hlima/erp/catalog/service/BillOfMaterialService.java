@@ -10,6 +10,7 @@ import com.hlima.erp.catalog.mapper.BillOfMaterialMapper;
 import com.hlima.erp.catalog.repository.BillOfMaterialRepository;
 import com.hlima.erp.shared.exception.NotFoundException;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +40,14 @@ public class BillOfMaterialService {
     BillOfMaterial getEntityByProductId(UUID productId) {
         return billOfMaterialRepository.findByProductId(productId)
                 .orElseThrow(() -> new NotFoundException("Ficha técnica"));
+    }
+
+    // Usado pelo módulo production pra checar se o produto tem ficha
+    // técnica cadastrada antes de iniciar uma ordem de produção — sem
+    // lançar NotFoundException, já que "não ter ficha técnica" ali é uma
+    // regra de negócio (BusinessException), não um recurso não encontrado.
+    public Optional<BillOfMaterial> findEntityByProductId(UUID productId) {
+        return billOfMaterialRepository.findByProductId(productId);
     }
 
     @Transactional
