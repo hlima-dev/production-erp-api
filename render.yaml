@@ -1,0 +1,47 @@
+# Blueprint do Render — cria o banco Postgres e o Web Service num só
+# passo ("New +" → "Blueprint", apontando pra este repositório).
+# Documentação: https://render.com/docs/blueprint-spec
+
+databases:
+  - name: erp-producao-db
+    databaseName: erp_producao
+    user: erp
+    plan: free
+
+services:
+  - type: web
+    name: erp-producao-api
+    env: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: DB_HOST
+        fromDatabase:
+          name: erp-producao-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: erp-producao-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: erp-producao-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: erp-producao-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: erp-producao-db
+          property: password
+      # Gerado automaticamente pelo Render na criação do serviço — não é o
+      # placeholder de dev do application.yml.
+      - key: JWT_SECRET
+        generateValue: true
+      # Atualize depois do deploy do frontend na Vercel, com a URL real
+      # (ex: https://production-erp-web.vercel.app) — sem isso o
+      # navegador bloqueia as chamadas por CORS.
+      - key: CORS_ALLOWED_ORIGINS
+        value: http://localhost:5173

@@ -112,6 +112,32 @@ Todos os endpoints (exceto `/auth/login`, `/auth/refresh` e os do próprio
 Swagger) exigem `Authorization: Bearer <accessToken>`, obtido em
 `POST /auth/login`.
 
+## Deploy (Render)
+
+Repositório inclui `Dockerfile` (multi-stage: build com Maven, runtime só
+com JRE) e `render.yaml` (Blueprint) pra criar o banco Postgres e o Web
+Service num passo só:
+
+1. No [Render](https://dashboard.render.com), **New +** → **Blueprint** →
+   selecione este repositório. Ele lê o `render.yaml` e cria o Postgres
+   (`erp-producao-db`) e o Web Service (`erp-producao-api`) já conectados
+   (as credenciais do banco viram env vars automaticamente via
+   `fromDatabase`).
+2. `JWT_SECRET` é gerado automaticamente pelo Render nesse passo (não usa
+   o placeholder de dev do `application.yml`).
+3. Depois de fazer o deploy do frontend (Vercel — ver o README do
+   [`production-erp-web`](https://github.com/hlima-dev/production-erp-web)),
+   volte aqui e atualize a env var `CORS_ALLOWED_ORIGINS` no Web Service
+   com a URL real da Vercel (ex: `https://production-erp-web.vercel.app`)
+   — sem isso o navegador bloqueia as chamadas por CORS. Redeploy manual
+   depois de salvar.
+4. `healthCheckPath: /actuator/health` no Blueprint faz o Render esperar a
+   aplicação (e as migrations do Flyway) subirem antes de rotear tráfego.
+
+Free tier do Render "dorme" o Web Service após um período sem requisições
+— o primeiro acesso depois disso demora ~30-50s (cold start) enquanto ele
+acorda.
+
 ## Módulos e endpoints
 
 | Módulo | Endpoints principais |

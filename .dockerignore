@@ -1,0 +1,10 @@
+target/
+*.class
+.env
+.idea/
+*.iml
+.vscode/
+.DS_Store
+.git/
+README.md
+docker-compose.yml
