@@ -50,6 +50,23 @@ Um único módulo Maven (simples de rodar/buildar), mas com separação clara
 por bounded context — sem cair no exagero de microsserviços pra um projeto
 de portfólio.
 
+### Ficha técnica em múltiplos níveis
+
+Produto tem três tipos (`ProductType`): **matéria-prima**, **semi-acabado**
+e **produto acabado**. Só matéria-prima não passa por ordem de produção nem
+tem ficha técnica — semi-acabado tem os dois, exatamente como um produto
+acabado (é "produzido" a partir da própria ficha técnica e dá entrada em
+estoque), com a diferença de que também pode ser insumo da ficha técnica de
+outro produto. Isso permite BOM em cadeia (ex: farinha + fermento + sal →
+**massa de pizza** [semi-acabado, com OP própria] → **mini pizza de queijo**
+[acabado, cuja ficha técnica usa massa de pizza + queijo]).
+
+`BillOfMaterialService.save` valida cada insumo: não pode ser o próprio
+produto, não pode ser produto acabado (nada usa um acabado como insumo), e
+— por causa da cadeia de múltiplos níveis — não pode já depender (direta ou
+indiretamente, seguindo a ficha técnica dele recursivamente) do produto que
+está recebendo a ficha, senão formaria um ciclo.
+
 ### Fluxo entre módulos
 
 ```mermaid

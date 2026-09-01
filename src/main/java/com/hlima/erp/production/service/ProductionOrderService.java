@@ -79,9 +79,10 @@ public class ProductionOrderService {
     @Transactional
     public ProductionOrderResponse create(ProductionOrderRequest request) {
         Product product = productService.getOrThrow(request.productId());
-        if (product.getType() != ProductType.PRODUTO_ACABADO) {
+        if (product.getType() == ProductType.MATERIA_PRIMA) {
             throw new BusinessException(
-                    "Só é possível abrir ordem de produção pra um produto acabado (" + product.getName() + " é matéria-prima).");
+                    "Só é possível abrir ordem de produção pra um produto semi-acabado ou acabado ("
+                            + product.getName() + " é matéria-prima).");
         }
         Warehouse warehouse = warehouseService.getOrThrow(request.warehouseId());
 
